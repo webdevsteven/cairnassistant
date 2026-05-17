@@ -5,3 +5,4 @@ export const rollD10 = () => rollDie(10)
 export const rollD6 = () => rollDie(6)
 export const roll2d20plus10 = () => rollDie(20) + rollDie(20) + 10
 export const rollD4 = () => rollDie(4)
+export const rollNd6 = (n) => Array.from({ length: n }, () => rollDie(6)).reduce((a, b) => a + b, 0)

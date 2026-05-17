@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useCharacters } from '../hooks/useCharacters'
 import TopBar from '../components/layout/TopBar'
 import StatBox from '../components/character/StatBox'
@@ -400,6 +400,8 @@ export default function CharacterSheetPage() {
   const { id } = useParams()
   const { getById, save, remove } = useCharacters()
   const navigate = useNavigate()
+  const location = useLocation()
+  const isNew = location.state?.isNew === true
   const [char, setChar] = useState(() => getById(id))
   const [showCritModal, setShowCritModal] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -571,7 +573,7 @@ export default function CharacterSheetPage() {
       </Section>
 
       {/* Background & Origins */}
-      <Section title="Background & Origins" defaultOpen={false}>
+      <Section title="Background & Origins" defaultOpen={isNew}>
         {/* Background description */}
         {bg?.description && (
           <p style={{ margin: '0 0 16px', fontSize: 13, color: '#a8a29e', lineHeight: 1.65, fontStyle: 'italic' }}>
@@ -614,15 +616,25 @@ export default function CharacterSheetPage() {
           </div>
         )}
 
-        {/* Bond */}
-        {char.bond?.text && (
-          <div style={{ marginTop: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#57534e', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>Bond</div>
-            <div style={{ background: '#141211', border: '1px solid #292524', borderRadius: 10, padding: '11px 14px', fontSize: 13, color: '#a8a29e', lineHeight: 1.65 }}>
-              {char.bond.text}
+        {/* Bond(s) */}
+        {(() => {
+          const allBonds = char.bonds?.length > 0 ? char.bonds : (char.bond ? [char.bond] : [])
+          if (allBonds.length === 0) return null
+          return (
+            <div style={{ marginTop: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#57534e', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>
+                {allBonds.length > 1 ? 'Bonds' : 'Bond'}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {allBonds.map((b, i) => (
+                  <div key={i} style={{ background: '#141211', border: '1px solid #292524', borderRadius: 10, padding: '11px 14px', fontSize: 13, color: '#a8a29e', lineHeight: 1.65 }}>
+                    {b.text}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )
+        })()}
 
         {/* Omens */}
         {char.omens?.length > 0 && (

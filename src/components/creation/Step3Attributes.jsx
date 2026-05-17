@@ -7,32 +7,26 @@ export default function Step3Attributes({ draft, setDraft }) {
 
   const attrs = ['str', 'dex', 'wil']
   const labels = { str: 'Strength', dex: 'Dexterity', wil: 'Willpower' }
-  const descriptions = {
-    str: 'Physical power, lifting, breaking, resisting poison',
-    dex: 'Speed, reflexes, dodging, climbing, sneaking, balancing',
-    wil: 'Persuasion, deception, charm, intimidation, spell manipulation'
+  const hints = {
+    str: 'Power, lifting, breaking, poison resistance',
+    dex: 'Speed, reflexes, dodging, sneaking, balance',
+    wil: 'Persuasion, charm, intimidation, spell control'
   }
+
+  const hasRolled = !!(draft.str?.current && draft.dex?.current && draft.wil?.current)
 
   function rollAll() {
     setRolling(true)
     setSwapA(null)
     setTimeout(() => {
+      const s = roll3d6(), d = roll3d6(), w = roll3d6()
       setDraft(prev => ({
         ...prev,
-        str: { current: roll3d6(), max: prev.str?.max || 10 },
-        dex: { current: roll3d6(), max: prev.dex?.max || 10 },
-        wil: { current: roll3d6(), max: prev.wil?.max || 10 },
+        str: { current: s, max: s },
+        dex: { current: d, max: d },
+        wil: { current: w, max: w },
       }))
-      // Update max to match rolled values after a beat
-      setTimeout(() => {
-        setDraft(prev => ({
-          ...prev,
-          str: { current: prev.str.current, max: prev.str.current },
-          dex: { current: prev.dex.current, max: prev.dex.current },
-          wil: { current: prev.wil.current, max: prev.wil.current },
-        }))
-        setRolling(false)
-      }, 50)
+      setRolling(false)
     }, 400)
   }
 
@@ -41,13 +35,13 @@ export default function Step3Attributes({ draft, setDraft }) {
     setDraft(prev => ({ ...prev, [attr]: { current: val, max: val } }))
   }
 
-  function handleSwap(attr) {
+  function handleCardTap(attr) {
+    if (!hasRolled) return
     if (swapA === null) {
       setSwapA(attr)
     } else if (swapA === attr) {
       setSwapA(null)
     } else {
-      // Perform swap
       setDraft(prev => {
         const aVal = prev[swapA].current
         const bVal = prev[attr].current
@@ -90,60 +84,76 @@ export default function Step3Attributes({ draft, setDraft }) {
           transition: 'background 0.2s'
         }}
       >
-        🎲 {rolling ? 'Rolling…' : 'Roll All Attributes'}
+        🎲 {rolling ? 'Rolling…' : hasRolled ? 'Re-roll All' : 'Roll All Attributes'}
       </button>
 
       {swapA && (
         <div style={{ padding: '10px 14px', background: '#1c1200', border: '1px solid #854d0e', borderRadius: 10, marginBottom: 12, fontSize: 13, color: '#fde68a' }}>
-          Tap another attribute to swap with <strong>{labels[swapA]}</strong>
+          Tap another attribute card to swap with <strong>{labels[swapA]}</strong> — or tap it again to cancel
         </div>
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {attrs.map(attr => {
-          const val = draft[attr]?.current || '—'
+          const val = draft[attr]?.current
           const isSwapSelected = swapA === attr
+          const inSwapMode = swapA !== null && swapA !== attr
+
           return (
             <div
               key={attr}
+              onClick={() => swapA !== null && handleCardTap(attr)}
               style={{
-                background: '#1c1917',
-                border: `1.5px solid ${isSwapSelected ? '#d97706' : '#292524'}`,
+                background: isSwapSelected ? '#1c1200' : inSwapMode ? '#1a1814' : '#1c1917',
+                border: `1.5px solid ${isSwapSelected ? '#d97706' : inSwapMode ? '#854d0e' : '#292524'}`,
                 borderRadius: 12,
                 padding: '14px 16px',
-                transition: 'border-color 0.15s'
+                transition: 'border-color 0.15s, background 0.15s',
+                cursor: swapA !== null ? 'pointer' : 'default'
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                {/* Big number */}
-                <input
-                  type="number"
-                  min={3}
-                  max={18}
-                  value={draft[attr]?.current || ''}
-                  onChange={e => handleManual(attr, e.target.value)}
-                  placeholder="—"
-                  style={{
+                {/* Value display / input */}
+                {val ? (
+                  <input
+                    type="number"
+                    min={3}
+                    max={18}
+                    value={val}
+                    onClick={e => e.stopPropagation()}
+                    onChange={e => handleManual(attr, e.target.value)}
+                    style={{
+                      width: 64, height: 64,
+                      background: '#0c0a09',
+                      border: `1px solid ${isSwapSelected ? '#d97706' : '#292524'}`,
+                      borderRadius: 10, color: isSwapSelected ? '#fde68a' : '#e7e5e4',
+                      fontSize: 28, fontWeight: 800, textAlign: 'center',
+                      outline: 'none', flexShrink: 0
+                    }}
+                  />
+                ) : (
+                  <div style={{
                     width: 64, height: 64,
-                    background: '#0c0a09', border: '1px solid #292524',
-                    borderRadius: 10, color: '#e7e5e4',
-                    fontSize: 28, fontWeight: 800, textAlign: 'center',
-                    outline: 'none', flexShrink: 0
-                  }}
-                />
+                    background: '#0c0a09', border: '1px dashed #44403c',
+                    borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 22, color: '#44403c', flexShrink: 0
+                  }}>
+                    —
+                  </div>
+                )}
 
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: '#e7e5e4', marginBottom: 4 }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: isSwapSelected ? '#fde68a' : '#e7e5e4', marginBottom: 4 }}>
                     {labels[attr]}
                   </div>
                   <div style={{ fontSize: 11, color: '#57534e', lineHeight: 1.4 }}>
-                    {descriptions[attr]}
+                    {hints[attr]}
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <button
-                    onClick={() => rollOne(attr)}
+                    onClick={e => { e.stopPropagation(); rollOne(attr) }}
                     style={{
                       padding: '6px 12px', background: 'transparent',
                       border: '1px solid #44403c', borderRadius: 6,
@@ -153,17 +163,18 @@ export default function Step3Attributes({ draft, setDraft }) {
                     🎲 Re-roll
                   </button>
                   <button
-                    onClick={() => handleSwap(attr)}
+                    onClick={e => { e.stopPropagation(); handleCardTap(attr) }}
+                    disabled={!hasRolled}
                     style={{
                       padding: '6px 12px',
                       background: isSwapSelected ? '#1c1200' : 'transparent',
                       border: `1px solid ${isSwapSelected ? '#d97706' : '#44403c'}`,
                       borderRadius: 6,
-                      color: isSwapSelected ? '#d97706' : '#78716c',
-                      fontSize: 12, cursor: 'pointer', fontWeight: 600
+                      color: isSwapSelected ? '#d97706' : hasRolled ? '#78716c' : '#3a3635',
+                      fontSize: 12, cursor: hasRolled ? 'pointer' : 'default', fontWeight: 600
                     }}
                   >
-                    ⇄ Swap
+                    {isSwapSelected ? '✕ Cancel' : '⇄ Swap'}
                   </button>
                 </div>
               </div>

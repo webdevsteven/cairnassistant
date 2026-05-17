@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { backgrounds } from '../../data/backgrounds'
 import { rollD20 } from '../../utils/dice'
 
 export default function Step1Background({ draft, setDraft }) {
   const [search, setSearch] = useState('')
   const [rolling, setRolling] = useState(false)
+  const cardRefs = useRef({})
 
   const filtered = backgrounds.filter(b =>
     b.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -19,6 +20,9 @@ export default function Step1Background({ draft, setDraft }) {
       backgroundChoices: { table1: null, table2: null },
       backgroundItems: [],
       inventory: [],
+      containers: [],
+      requiresExtraBond: false,
+      requiresExtraOmen: false,
     }))
   }
 
@@ -26,8 +30,13 @@ export default function Step1Background({ draft, setDraft }) {
     setRolling(true)
     setTimeout(() => {
       const idx = (rollD20() - 1) % backgrounds.length
-      handleSelect(backgrounds[idx])
+      const chosen = backgrounds[idx]
+      handleSelect(chosen)
       setRolling(false)
+      setTimeout(() => {
+        const el = cardRefs.current[chosen.id]
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 50)
     }, 400)
   }
 
@@ -77,6 +86,7 @@ export default function Step1Background({ draft, setDraft }) {
           return (
             <button
               key={bg.id}
+              ref={el => { cardRefs.current[bg.id] = el }}
               onClick={() => handleSelect(bg)}
               style={{
                 background: isSelected ? '#292524' : '#1c1917',

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { backgrounds } from '../data/backgrounds'
 import WizardProgress from '../components/creation/WizardProgress'
 import Step1Background from '../components/creation/Step1Background'
 import Step2BackgroundTables from '../components/creation/Step2BackgroundTables'
@@ -25,7 +26,12 @@ export default function CreationWizardPage() {
       case 3: return !!(draft.str?.current && draft.dex?.current && draft.wil?.current)
       case 4: return !!(draft.hp?.current)
       case 5: return true
-      case 6: return !!draft.bond
+      case 6: {
+        const bondsList = draft.bonds || []
+        const activeBg = backgrounds.find(b => b.id === draft.background)
+        const needsTwoBonds = activeBg?.specialRule?.toLowerCase().includes('bonds twice') || draft.requiresExtraBond
+        return needsTwoBonds ? bondsList.length >= 2 : bondsList.length >= 1
+      }
       case 7: return !!(draft.name?.trim())
       default: return true
     }
@@ -56,7 +62,7 @@ export default function CreationWizardPage() {
       updatedAt: Date.now()
     }
     save(character)
-    navigate(`/character/${character.id}`)
+    navigate(`/character/${character.id}`, { state: { isNew: true } })
   }
 
   const steps = [

@@ -70,6 +70,7 @@ export function createEmptyCharacter() {
     scrolls: [],
     relics: [],
     bond: null,
+    bonds: [],
     omens: [],
     scars: [],
     notes: '',

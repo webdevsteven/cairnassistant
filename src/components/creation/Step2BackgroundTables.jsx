@@ -2,6 +2,26 @@ import { useState } from 'react'
 import { getBackgroundById } from '../../data/backgrounds'
 import { rollD6 } from '../../utils/dice'
 
+function parseContainerSlots(name) {
+  const m = name.match(/\+(\d+)\s+slots?/i)
+  return m ? parseInt(m[1], 10) : 0
+}
+
+function isGoldEntry(name) {
+  return /^\d+d\d+\s+Gold\s+Pieces$/i.test(name)
+}
+
+function buildInventoryItem(name) {
+  return {
+    id: crypto.randomUUID(),
+    name,
+    slots: name.toLowerCase().includes('bulky') ? 2 : 1,
+    isFatigue: false,
+    isPetty: name.toLowerCase().includes('petty'),
+    notes: ''
+  }
+}
+
 export default function Step2BackgroundTables({ draft, setDraft }) {
   const bg = getBackgroundById(draft.background)
   const [rolling1, setRolling1] = useState(false)
@@ -21,32 +41,54 @@ export default function Step2BackgroundTables({ draft, setDraft }) {
     }, 350)
   }
 
-  function selectEntry(tableNum, roll) {
+  function selectEntry(tableNum, rollVal) {
     const table = tableNum === 1 ? bg.table1 : bg.table2
-    const entry = table.entries.find(e => e.roll === roll)
+    const entry = table.entries.find(e => e.roll === rollVal)
     if (!entry) return
 
     setDraft(prev => {
-      const newChoices = { ...prev.backgroundChoices, [`table${tableNum}`]: roll }
-      // Collect all items from both table choices
+      const newChoices = { ...prev.backgroundChoices, [`table${tableNum}`]: rollVal }
+
       const t1Entry = tableNum === 1 ? entry : (bg.table1.entries.find(e => e.roll === prev.backgroundChoices?.table1))
       const t2Entry = tableNum === 2 ? entry : (bg.table2.entries.find(e => e.roll === prev.backgroundChoices?.table2))
 
-      const tableItems = [
+      const tableItemNames = [
         ...(t1Entry?.items || []),
         ...(t2Entry?.items || [])
       ]
 
-      const allItems = [
-        ...bg.startingGear.map(name => ({
-          id: crypto.randomUUID(), name, slots: 1,
-          isFatigue: false, isPetty: name.toLowerCase().includes('petty'), notes: ''
-        })),
-        ...tableItems.map(name => ({
-          id: crypto.randomUUID(), name, slots: 1,
-          isFatigue: false, isPetty: name.toLowerCase().includes('petty'), notes: ''
-        }))
+      // Combine starting gear + table items, filtering gold entries and container-only entries
+      const allGearNames = [
+        ...bg.startingGear,
+        ...tableItemNames
       ]
+
+      const containers = []
+      const inventoryItems = []
+
+      allGearNames.forEach(name => {
+        if (isGoldEntry(name)) return // handled separately
+        const slotBonus = parseContainerSlots(name)
+        if (slotBonus > 0) {
+          // This item is a container — create a container card
+          containers.push({
+            id: crypto.randomUUID(),
+            name,
+            maxSlots: slotBonus,
+            items: []
+          })
+          // Also add a reference item in inventory if it has bulk (e.g. Backpack is standard, others may not be)
+          // Backpack is already handled as "Backpack" from startingGear — skip adding containers as inventory items
+          return
+        }
+        inventoryItems.push(buildInventoryItem(name))
+      })
+
+      // Special flags from table entries
+      const requiresExtraBond = prev.requiresExtraBond ||
+        (t1Entry?.rollBonds) || (t2Entry?.rollBonds) || false
+      const requiresExtraOmen = prev.requiresExtraOmen ||
+        (t1Entry?.rollOmens) || (t2Entry?.rollOmens) || false
 
       const descriptions = {
         table1: tableNum === 1
@@ -56,7 +98,17 @@ export default function Step2BackgroundTables({ draft, setDraft }) {
           ? { question: bg.table2.question, text: entry.text }
           : (prev.backgroundTableDescriptions?.table2 || { question: bg.table2.question, text: '' }),
       }
-      return { ...prev, backgroundChoices: newChoices, backgroundItems: tableItems, inventory: allItems, backgroundTableDescriptions: descriptions }
+
+      return {
+        ...prev,
+        backgroundChoices: newChoices,
+        backgroundItems: tableItemNames,
+        inventory: inventoryItems,
+        containers,
+        backgroundTableDescriptions: descriptions,
+        requiresExtraBond,
+        requiresExtraOmen,
+      }
     })
   }
 
@@ -89,12 +141,20 @@ export default function Step2BackgroundTables({ draft, setDraft }) {
             </p>
             {selected && entry.items.length > 0 && (
               <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                {entry.items.map((item, i) => (
+                {entry.items.filter(i => !isGoldEntry(i)).map((item, i) => (
                   <span key={i} style={{
-                    fontSize: 11, color: '#d97706',
-                    background: '#1c0a00', padding: '2px 7px', borderRadius: 5
-                  }}>+ {item}</span>
+                    fontSize: 11, color: parseContainerSlots(item) > 0 ? '#818cf8' : '#d97706',
+                    background: parseContainerSlots(item) > 0 ? '#1e1b4b' : '#1c0a00',
+                    padding: '2px 7px', borderRadius: 5
+                  }}>
+                    {parseContainerSlots(item) > 0 ? '📦' : '+'} {item}
+                  </span>
                 ))}
+              </div>
+            )}
+            {selected && (entry.rollBonds || entry.rollOmens) && (
+              <div style={{ marginTop: 6, fontSize: 11, color: '#a78bfa', fontStyle: 'italic' }}>
+                ✦ {entry.rollBonds ? 'Roll an extra Bond in Step 6' : 'Roll on the Omens table in Step 7'}
               </div>
             )}
           </div>
@@ -164,7 +224,17 @@ export default function Step2BackgroundTables({ draft, setDraft }) {
                 fontSize: 11, color: '#86efac', background: '#052e16', padding: '3px 8px', borderRadius: 6
               }}>{item.name}</span>
             ))}
+            {draft.containers?.map((c, i) => (
+              <span key={`c${i}`} style={{
+                fontSize: 11, color: '#818cf8', background: '#1e1b4b', padding: '3px 8px', borderRadius: 6
+              }}>📦 {c.name}</span>
+            ))}
           </div>
+          {(draft.requiresExtraBond || draft.requiresExtraOmen) && (
+            <div style={{ marginTop: 8, fontSize: 11, color: '#a78bfa' }}>
+              ✦ {draft.requiresExtraBond ? 'You will roll a second Bond' : 'You will roll on the Omens table'} due to a special ability
+            </div>
+          )}
         </div>
       )}
     </div>

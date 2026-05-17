@@ -1,24 +1,38 @@
-import { useState } from 'react'
-import { rollD6 } from '../../utils/dice'
+import { useState, useEffect } from 'react'
+import { rollD6, rollNd6 } from '../../utils/dice'
 import { getBackgroundById, deriveArmorFromGear } from '../../data/backgrounds'
 
 export default function Step4HP({ draft, setDraft }) {
-  const [rolling, setRolling] = useState(false)
+  const [rollingHP, setRollingHP] = useState(false)
+  const [rollingGold, setRollingGold] = useState(false)
   const bg = getBackgroundById(draft.background)
 
   const inventoryNames = (draft.inventory || []).map(i => i.name)
   const derivedArmor = deriveArmorFromGear(inventoryNames)
 
+  // Auto-set armor once on mount if not yet set
+  useEffect(() => {
+    if (derivedArmor > 0 && (draft.armor === 0 || draft.armor === undefined)) {
+      setDraft(prev => ({ ...prev, armor: derivedArmor }))
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   function rollHP() {
-    setRolling(true)
+    setRollingHP(true)
     setTimeout(() => {
       const val = rollD6()
-      setDraft(prev => ({
-        ...prev,
-        hp: { current: val, max: val },
-        armor: derivedArmor
-      }))
-      setRolling(false)
+      setDraft(prev => ({ ...prev, hp: { current: val, max: val }, armor: derivedArmor }))
+      setRollingHP(false)
+    }, 350)
+  }
+
+  function rollGold() {
+    setRollingGold(true)
+    setTimeout(() => {
+      const val = rollNd6(3)
+      setDraft(prev => ({ ...prev, gold: val }))
+      setRollingGold(false)
     }, 350)
   }
 
@@ -35,7 +49,7 @@ export default function Step4HP({ draft, setDraft }) {
   return (
     <div style={{ padding: '16px 16px 0' }}>
       <p style={{ margin: '0 0 16px', color: '#a8a29e', fontSize: 14, lineHeight: 1.5 }}>
-        Roll 1d6 for your Hit Protection (HP). HP reflects your ability to avoid harm — not your health. Armor reduces incoming damage.
+        Roll 1d6 for Hit Protection and 3d6 for starting Gold. HP reflects your ability to avoid harm — not your health.
       </p>
 
       {/* HP Roll */}
@@ -67,18 +81,70 @@ export default function Step4HP({ draft, setDraft }) {
             </p>
             <button
               onClick={rollHP}
-              disabled={rolling}
+              disabled={rollingHP}
               style={{
                 padding: '10px 20px',
-                background: rolling ? '#292524' : '#d97706',
+                background: rollingHP ? '#292524' : '#d97706',
                 border: 'none', borderRadius: 10,
-                color: rolling ? '#78716c' : '#1c1917',
+                color: rollingHP ? '#78716c' : '#1c1917',
                 fontWeight: 700, fontSize: 14,
-                cursor: rolling ? 'default' : 'pointer',
+                cursor: rollingHP ? 'default' : 'pointer',
                 transition: 'background 0.2s'
               }}
             >
-              🎲 {rolling ? 'Rolling…' : 'Roll 1d6'}
+              🎲 {rollingHP ? 'Rolling…' : 'Roll 1d6'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Gold Roll */}
+      <div style={{
+        background: '#1c1917', border: '1px solid #292524',
+        borderRadius: 14, padding: '20px', marginBottom: 16
+      }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#78716c', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14 }}>
+          Starting Gold
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="number"
+              min={0}
+              value={draft.gold ?? ''}
+              onChange={e => setDraft(prev => ({ ...prev, gold: Math.max(0, parseInt(e.target.value, 10) || 0) }))}
+              placeholder="—"
+              style={{
+                width: 80, height: 80,
+                background: '#0c0a09', border: '1px solid #292524',
+                borderRadius: 12, color: '#f59e0b',
+                fontSize: 32, fontWeight: 800, textAlign: 'center', outline: 'none'
+              }}
+            />
+            <div style={{
+              position: 'absolute', bottom: -16, left: 0, right: 0,
+              textAlign: 'center', fontSize: 10, color: '#78716c'
+            }}>gp</div>
+          </div>
+          <div style={{ flex: 1 }}>
+            <p style={{ margin: '0 0 8px', color: '#a8a29e', fontSize: 13, lineHeight: 1.5 }}>
+              Roll 3d6 for starting gold pieces. Bags of coins under 100gp are Petty (take no inventory slots).
+            </p>
+            <button
+              onClick={rollGold}
+              disabled={rollingGold}
+              style={{
+                padding: '10px 20px',
+                background: rollingGold ? '#292524' : '#1c1917',
+                border: `1px solid ${rollingGold ? '#44403c' : '#d97706'}`,
+                borderRadius: 10,
+                color: rollingGold ? '#78716c' : '#d97706',
+                fontWeight: 700, fontSize: 14,
+                cursor: rollingGold ? 'default' : 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              🎲 {rollingGold ? 'Rolling…' : 'Roll 3d6'}
             </button>
           </div>
         </div>
@@ -110,13 +176,13 @@ export default function Step4HP({ draft, setDraft }) {
             <p style={{ margin: '0 0 6px', color: '#a8a29e', fontSize: 13, lineHeight: 1.5 }}>
               Derived from your starting gear. Max is 3.
             </p>
-            {derivedArmor > 0 && (
-              <div style={{ fontSize: 12, color: '#d97706' }}>
-                ✓ Detected <strong>{derivedArmor}</strong> Armor from starting gear
+            {derivedArmor > 0 ? (
+              <div style={{ fontSize: 12, color: '#4ade80', marginBottom: 4 }}>
+                ✓ Auto-detected <strong>{derivedArmor}</strong> Armor from starting gear
               </div>
-            )}
-            <div style={{ marginTop: 8, fontSize: 11, color: '#57534e' }}>
-              0 = No armor | 1 = Light | 2 = Medium | 3 = Heavy (max)
+            ) : null}
+            <div style={{ fontSize: 11, color: '#57534e' }}>
+              0 = No armor · 1 = Light · 2 = Medium · 3 = Heavy (max)
             </div>
           </div>
         </div>
@@ -126,7 +192,7 @@ export default function Step4HP({ draft, setDraft }) {
       {draft.inventory?.length > 0 && (
         <div style={{
           background: '#1c1917', border: '1px solid #292524',
-          borderRadius: 14, padding: '16px'
+          borderRadius: 14, padding: '16px', marginBottom: 16
         }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: '#78716c', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
             Starting Inventory ({draft.inventory.filter(i => !i.isPetty).length}/10 slots)
@@ -147,6 +213,14 @@ export default function Step4HP({ draft, setDraft }) {
               </div>
             ))}
           </div>
+          {draft.containers?.length > 0 && (
+            <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #292524' }}>
+              <div style={{ fontSize: 11, color: '#818cf8', fontWeight: 700, marginBottom: 6 }}>Containers</div>
+              {draft.containers.map((c, i) => (
+                <div key={i} style={{ fontSize: 12, color: '#818cf8' }}>📦 {c.name} ({c.maxSlots} slots)</div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
