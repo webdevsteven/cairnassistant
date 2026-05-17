@@ -73,5 +73,9 @@ export function createEmptyCharacter() {
     omens: [],
     scars: [],
     notes: '',
+    backgroundTableDescriptions: {
+      table1: { question: '', text: '' },
+      table2: { question: '', text: '' },
+    },
   }
 }

@@ -48,7 +48,15 @@ export default function Step2BackgroundTables({ draft, setDraft }) {
         }))
       ]
 
-      return { ...prev, backgroundChoices: newChoices, backgroundItems: tableItems, inventory: allItems }
+      const descriptions = {
+        table1: tableNum === 1
+          ? { question: bg.table1.question, text: entry.text }
+          : (prev.backgroundTableDescriptions?.table1 || { question: bg.table1.question, text: '' }),
+        table2: tableNum === 2
+          ? { question: bg.table2.question, text: entry.text }
+          : (prev.backgroundTableDescriptions?.table2 || { question: bg.table2.question, text: '' }),
+      }
+      return { ...prev, backgroundChoices: newChoices, backgroundItems: tableItems, inventory: allItems, backgroundTableDescriptions: descriptions }
     })
   }
 

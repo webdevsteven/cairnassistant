@@ -305,13 +305,6 @@ export default function CharacterSheetPage() {
             {bg?.name || char.background} {char.age ? `· Age ${char.age}` : ''}
           </div>
 
-          {/* Traits */}
-          {char.traits && Object.values(char.traits).some(Boolean) && (
-            <p style={{ margin: '10px 0 0', fontSize: 12, color: '#57534e', lineHeight: 1.6 }}>
-              {Object.values(char.traits).filter(Boolean).join(' · ')}
-            </p>
-          )}
-
           {/* Deprived toggle */}
           <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12, cursor: 'pointer' }}>
             <div
@@ -390,6 +383,71 @@ export default function CharacterSheetPage() {
         </button>
       </Section>
 
+      {/* Background & Origins */}
+      <Section title="Background & Origins" defaultOpen={false}>
+        {/* Background description */}
+        {bg?.description && (
+          <p style={{ margin: '0 0 16px', fontSize: 13, color: '#a8a29e', lineHeight: 1.65, fontStyle: 'italic' }}>
+            {bg.description}
+          </p>
+        )}
+
+        {/* Table results */}
+        {[1, 2].map(n => {
+          const desc = char.backgroundTableDescriptions?.[`table${n}`]
+          if (!desc?.text) return null
+          return (
+            <div key={n} style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#57534e', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>
+                {desc.question || `Background Table ${n}`}
+              </div>
+              <div style={{ background: '#141211', border: '1px solid #292524', borderRadius: 10, padding: '11px 14px', fontSize: 13, color: '#d6d3d1', lineHeight: 1.6 }}>
+                {desc.text}
+              </div>
+            </div>
+          )
+        })}
+
+        {/* Traits with labels */}
+        {char.traits && Object.entries(char.traits).some(([,v]) => v) && (
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#57534e', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
+              Character Traits
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              {Object.entries(char.traits).filter(([,v]) => v).map(([key, val]) => (
+                <div key={key} style={{ background: '#141211', border: '1px solid #292524', borderRadius: 8, padding: '9px 12px' }}>
+                  <div style={{ fontSize: 10, color: '#57534e', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                  </div>
+                  <div style={{ fontSize: 13, color: '#e7e5e4', fontWeight: 600 }}>{val}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Bond */}
+        {char.bond?.text && (
+          <div style={{ marginTop: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#57534e', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>Bond</div>
+            <div style={{ background: '#141211', border: '1px solid #292524', borderRadius: 10, padding: '11px 14px', fontSize: 13, color: '#a8a29e', lineHeight: 1.65 }}>
+              {char.bond.text}
+            </div>
+          </div>
+        )}
+
+        {/* Omens */}
+        {char.omens?.length > 0 && (
+          <div style={{ marginTop: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#57534e', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>Omen</div>
+            <div style={{ background: '#0d0d1a', border: '1px solid #1e1b4b', borderRadius: 10, padding: '11px 14px', fontSize: 13, color: '#a5b4fc', lineHeight: 1.65, fontStyle: 'italic' }}>
+              "{char.omens[0]}"
+            </div>
+          </div>
+        )}
+      </Section>
+
       {/* Inventory */}
       <Section title="Inventory">
         <InventoryGrid
@@ -438,25 +496,6 @@ export default function CharacterSheetPage() {
             <button onClick={() => addMagicItem('relic')} style={{ padding: '10px', background: 'transparent', border: '1px dashed #44403c', borderRadius: 8, color: '#78716c', fontSize: 13, cursor: 'pointer' }}>+ Add Relic</button>
           </div>
         </div>
-      </Section>
-
-      {/* Bond & Omens */}
-      <Section title="Bond & Omens" defaultOpen={false}>
-        <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#78716c', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Bond</div>
-          <div style={{ background: '#1c1917', border: '1px solid #292524', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#a8a29e', lineHeight: 1.6 }}>
-            {char.bond?.text || <span style={{ color: '#44403c' }}>No bond recorded</span>}
-          </div>
-        </div>
-
-        {char.omens?.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#78716c', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Omen</div>
-            <div style={{ background: '#0d0d1a', border: '1px solid #1e1b4b', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#a5b4fc', lineHeight: 1.6, fontStyle: 'italic' }}>
-              "{char.omens[0]}"
-            </div>
-          </div>
-        )}
       </Section>
 
       {/* Scars */}
