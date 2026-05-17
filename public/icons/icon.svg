@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#1c1917"/>
+  <!-- Cairn stones stacked -->
+  <!-- Base stone -->
+  <ellipse cx="256" cy="430" rx="160" ry="52" fill="#57534e"/>
+  <rect x="96" y="378" width="320" height="52" fill="#57534e"/>
+  <!-- Second stone -->
+  <ellipse cx="256" cy="340" rx="118" ry="42" fill="#78716c"/>
+  <rect x="138" y="298" width="236" height="42" fill="#78716c"/>
+  <!-- Third stone -->
+  <ellipse cx="256" cy="262" rx="90" ry="36" fill="#a8a29e"/>
+  <rect x="166" y="226" width="180" height="36" fill="#a8a29e"/>
+  <!-- Fourth stone -->
+  <ellipse cx="256" cy="194" rx="66" ry="32" fill="#d6d3d1"/>
+  <rect x="190" y="162" width="132" height="32" fill="#d6d3d1"/>
+  <!-- Top stone (amber/gold) -->
+  <ellipse cx="256" cy="138" rx="52" ry="24" fill="#f59e0b"/>
+  <rect x="204" y="114" width="104" height="24" fill="#f59e0b"/>
+  <!-- Cap stone -->
+  <ellipse cx="256" cy="104" rx="36" ry="20" fill="#fbbf24"/>
+</svg>

@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --font-family-serif: Georgia, 'Times New Roman', serif;
+  --color-cairn-bg: #0c0a09;
+  --color-cairn-surface: #1c1917;
+  --color-cairn-card: #292524;
+  --color-cairn-border: #44403c;
+  --color-cairn-muted: #78716c;
+  --color-cairn-text: #e7e5e4;
+  --color-cairn-accent: #d97706;
+  --color-cairn-accent-light: #f59e0b;
+  --color-cairn-danger: #dc2626;
+  --color-cairn-success: #16a34a;
+  --color-cairn-fatigue: #92400e;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  background-color: #0c0a09;
+  color: #e7e5e4;
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Safe area for bottom nav */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Smooth scrolling */
+.scroll-area {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #1c1917;
+}
+::-webkit-scrollbar-thumb {
+  background: #44403c;
+  border-radius: 2px;
+}
+
+/* Number input arrows hidden */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Transition utilities */
+.fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+  animation: slideUp 0.25s ease-out;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
