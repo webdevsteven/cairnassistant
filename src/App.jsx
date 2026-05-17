@@ -4,6 +4,7 @@ import CharactersPage from './pages/CharactersPage'
 import CreationWizardPage from './pages/CreationWizardPage'
 import CharacterSheetPage from './pages/CharacterSheetPage'
 import RulesPage from './pages/RulesPage'
+import ShopPage from './pages/ShopPage'
 
 function Layout() {
   const location = useLocation()
@@ -32,6 +33,7 @@ const router = createHashRouter([
       { path: '/create', element: <CreationWizardPage /> },
       { path: '/character/:id', element: <CharacterSheetPage /> },
       { path: '/rules', element: <RulesPage /> },
+      { path: '/shop', element: <ShopPage /> },
     ]
   }
 ])

@@ -5,9 +5,20 @@ const tabs = [
     to: '/',
     label: 'Characters',
     icon: (active) => (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.5 : 2} strokeLinecap="round" strokeLinejoin="round" style={{width:24,height:24}}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.5 : 2} strokeLinecap="round" strokeLinejoin="round" style={{width:22,height:22}}>
         <circle cx="12" cy="8" r="4"/>
         <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    )
+  },
+  {
+    to: '/shop',
+    label: 'Shop',
+    icon: (active) => (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.5 : 2} strokeLinecap="round" strokeLinejoin="round" style={{width:22,height:22}}>
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 01-8 0"/>
       </svg>
     )
   },
@@ -15,7 +26,7 @@ const tabs = [
     to: '/rules',
     label: 'Rules',
     icon: (active) => (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.5 : 2} strokeLinecap="round" strokeLinejoin="round" style={{width:24,height:24}}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.5 : 2} strokeLinecap="round" strokeLinejoin="round" style={{width:22,height:22}}>
         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
         <line x1="9" y1="7" x2="15" y2="7"/>
@@ -54,9 +65,9 @@ export default function BottomNav() {
             padding: '10px 0',
             textDecoration: 'none',
             color: isActive ? '#f59e0b' : '#78716c',
-            fontSize: 11,
-            fontWeight: isActive ? 600 : 400,
-            letterSpacing: '0.02em',
+            fontSize: 10,
+            fontWeight: isActive ? 700 : 400,
+            letterSpacing: '0.03em',
             transition: 'color 0.15s',
             minHeight: 44
           })}
