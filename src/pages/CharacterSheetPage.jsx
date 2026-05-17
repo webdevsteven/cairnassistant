@@ -209,6 +209,193 @@ function MagicItem({ item, onEdit, onDelete, type }) {
   )
 }
 
+// ── Container components ──────────────────────────────────────────────────────
+
+function ContainerCard({ container, onUpdate, onDelete }) {
+  const [addingItem, setAddingItem] = useState(false)
+  const [newName, setNewName]       = useState('')
+  const [newSlots, setNewSlots]     = useState(1)
+  const [editingName, setEditingName] = useState(false)
+  const [nameVal, setNameVal]       = useState(container.name)
+
+  const usedSlots = (container.items || []).reduce((s, i) => s + (i.slots || 1), 0)
+  const freeSlots = container.maxSlots - usedSlots
+
+  function addItem() {
+    if (!newName.trim()) return
+    onUpdate({
+      ...container,
+      items: [...(container.items || []), { id: crypto.randomUUID(), name: newName.trim(), slots: newSlots }]
+    })
+    setNewName(''); setNewSlots(1); setAddingItem(false)
+  }
+
+  function removeItem(itemId) {
+    onUpdate({ ...container, items: (container.items || []).filter(i => i.id !== itemId) })
+  }
+
+  function commitName() {
+    setEditingName(false)
+    if (nameVal.trim() && nameVal !== container.name) onUpdate({ ...container, name: nameVal.trim() })
+  }
+
+  const pct = container.maxSlots > 0 ? Math.min(1, usedSlots / container.maxSlots) : 0
+  const barColor = pct >= 1 ? '#ef4444' : pct >= 0.75 ? '#f59e0b' : '#16a34a'
+
+  return (
+    <div style={{ background: '#1c1917', border: '1px solid #292524', borderRadius: 12, padding: '14px 14px 12px', marginBottom: 10 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+        {editingName ? (
+          <input
+            autoFocus value={nameVal}
+            onChange={e => setNameVal(e.target.value)}
+            onBlur={commitName}
+            onKeyDown={e => (e.key === 'Enter' || e.key === 'Escape') && commitName()}
+            style={{ flex: 1, background: '#0c0a09', border: '1px solid #d97706', borderRadius: 6, color: '#e7e5e4', fontSize: 14, fontWeight: 700, padding: '5px 9px', outline: 'none' }}
+          />
+        ) : (
+          <button onClick={() => { setNameVal(container.name); setEditingName(true) }}
+            style={{ flex: 1, background: 'none', border: 'none', textAlign: 'left', color: '#e7e5e4', fontSize: 14, fontWeight: 700, cursor: 'text', padding: 0 }}>
+            {container.name}
+          </button>
+        )}
+        <span style={{ fontSize: 12, color: freeSlots === 0 ? '#ef4444' : '#78716c', fontWeight: 600, flexShrink: 0 }}>
+          {usedSlots}/{container.maxSlots} slots
+        </span>
+        <button onClick={onDelete}
+          style={{ background: 'none', border: 'none', color: '#44403c', cursor: 'pointer', fontSize: 18, lineHeight: 1, padding: '0 2px', flexShrink: 0 }}>
+          ×
+        </button>
+      </div>
+
+      {/* Slot bar */}
+      <div style={{ height: 5, background: '#292524', borderRadius: 3, marginBottom: 10, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${pct * 100}%`, background: barColor, borderRadius: 3, transition: 'width 0.25s, background 0.25s' }} />
+      </div>
+
+      {/* Items */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {(container.items || []).map(item => (
+          <div key={item.id} style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            background: '#141211', border: '1px solid #1c1917',
+            borderRadius: 8, padding: '7px 10px'
+          }}>
+            <span style={{ flex: 1, fontSize: 13, color: '#a8a29e' }}>{item.name}</span>
+            {item.slots === 2 && <span style={{ fontSize: 10, color: '#78716c', fontWeight: 600 }}>BULKY</span>}
+            <span style={{ fontSize: 11, color: '#57534e' }}>{item.slots} slot{item.slots !== 1 ? 's' : ''}</span>
+            <button onClick={() => removeItem(item.id)}
+              style={{ background: 'none', border: 'none', color: '#44403c', cursor: 'pointer', fontSize: 15, lineHeight: 1, padding: '0 2px' }}>
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Add item form */}
+      {addingItem ? (
+        <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+          <input
+            autoFocus value={newName}
+            onChange={e => setNewName(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && addItem()}
+            placeholder="Item name…"
+            style={{ flex: 1, background: '#0c0a09', border: '1px solid #292524', borderRadius: 7, color: '#e7e5e4', fontSize: 13, padding: '7px 10px', outline: 'none' }}
+          />
+          <select value={newSlots} onChange={e => setNewSlots(+e.target.value)}
+            style={{ background: '#0c0a09', border: '1px solid #292524', borderRadius: 7, color: '#a8a29e', fontSize: 13, padding: '7px 8px', outline: 'none' }}>
+            {Array.from({ length: Math.min(freeSlots, 2) }, (_, i) => i + 1).map(n => (
+              <option key={n} value={n}>{n} slot{n > 1 ? 's' : ''}</option>
+            ))}
+          </select>
+          <button onClick={addItem}
+            style={{ padding: '7px 12px', background: '#d97706', border: 'none', borderRadius: 7, color: '#1c1917', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+            Add
+          </button>
+          <button onClick={() => setAddingItem(false)}
+            style={{ padding: '7px 10px', background: 'transparent', border: '1px solid #292524', borderRadius: 7, color: '#78716c', fontSize: 13, cursor: 'pointer' }}>
+            ✕
+          </button>
+        </div>
+      ) : freeSlots > 0 ? (
+        <button onClick={() => setAddingItem(true)}
+          style={{ width: '100%', marginTop: 8, padding: '7px', background: 'transparent', border: '1px dashed #292524', borderRadius: 7, color: '#57534e', fontSize: 12, cursor: 'pointer' }}>
+          + Add item ({freeSlots} slot{freeSlots !== 1 ? 's' : ''} free)
+        </button>
+      ) : (
+        <div style={{ marginTop: 8, fontSize: 11, color: '#ef4444', textAlign: 'center' }}>Container full</div>
+      )}
+    </div>
+  )
+}
+
+function ContainersSection({ containers, onChange }) {
+  const [adding, setAdding] = useState(false)
+  const [newName, setNewName]   = useState('')
+  const [newSlots, setNewSlots] = useState(4)
+
+  function addContainer() {
+    if (!newName.trim() || newSlots < 1) return
+    onChange([...containers, { id: crypto.randomUUID(), name: newName.trim(), maxSlots: newSlots, items: [] }])
+    setNewName(''); setNewSlots(4); setAdding(false)
+  }
+
+  function updateContainer(updated) {
+    onChange(containers.map(c => c.id === updated.id ? updated : c))
+  }
+
+  function deleteContainer(id) {
+    onChange(containers.filter(c => c.id !== id))
+  }
+
+  return (
+    <Section title={`Containers${containers.length > 0 ? ` (${containers.length})` : ''}`} defaultOpen={containers.length > 0}>
+      {containers.map(c => (
+        <ContainerCard key={c.id} container={c} onUpdate={updateContainer} onDelete={() => deleteContainer(c.id)} />
+      ))}
+
+      {adding ? (
+        <div style={{ background: '#1c1917', border: '1px solid #d97706', borderRadius: 12, padding: 14 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#78716c', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>
+            New Container
+          </div>
+          <input
+            autoFocus value={newName}
+            onChange={e => setNewName(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && addContainer()}
+            placeholder="Name (e.g. Cart, Saddlebags, Chest…)"
+            style={{ width: '100%', background: '#0c0a09', border: '1px solid #292524', borderRadius: 8, color: '#e7e5e4', fontSize: 14, padding: '10px 12px', outline: 'none', boxSizing: 'border-box', marginBottom: 10 }}
+          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+            <span style={{ fontSize: 13, color: '#78716c', flexShrink: 0 }}>Slots available:</span>
+            <button onClick={() => setNewSlots(s => Math.max(1, s - 1))}
+              style={{ width: 32, height: 32, background: '#292524', border: '1px solid #44403c', borderRadius: 6, color: '#a8a29e', fontSize: 18, cursor: 'pointer', display:'flex',alignItems:'center',justifyContent:'center' }}>−</button>
+            <span style={{ fontSize: 20, fontWeight: 800, color: '#e7e5e4', minWidth: 28, textAlign: 'center' }}>{newSlots}</span>
+            <button onClick={() => setNewSlots(s => Math.min(20, s + 1))}
+              style={{ width: 32, height: 32, background: '#292524', border: '1px solid #44403c', borderRadius: 6, color: '#a8a29e', fontSize: 18, cursor: 'pointer', display:'flex',alignItems:'center',justifyContent:'center' }}>+</button>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={addContainer}
+              style={{ flex: 1, padding: '11px', background: '#d97706', border: 'none', borderRadius: 10, color: '#1c1917', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
+              Add Container
+            </button>
+            <button onClick={() => setAdding(false)}
+              style={{ padding: '11px 16px', background: 'transparent', border: '1px solid #44403c', borderRadius: 10, color: '#78716c', fontSize: 14, cursor: 'pointer' }}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button onClick={() => setAdding(true)}
+          style={{ width: '100%', padding: '12px', background: 'transparent', border: '1px dashed #44403c', borderRadius: 10, color: '#78716c', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+          + Add Container / Mount / Vehicle
+        </button>
+      )}
+    </Section>
+  )
+}
+
 export default function CharacterSheetPage() {
   const { id } = useParams()
   const { getById, save, remove } = useCharacters()
@@ -455,6 +642,12 @@ export default function CharacterSheetPage() {
           onChange={inventory => update({ inventory })}
         />
       </Section>
+
+      {/* Containers */}
+      <ContainersSection
+        containers={char.containers || []}
+        onChange={containers => update({ containers })}
+      />
 
       {/* Magic */}
       <Section title="Magic" defaultOpen={false}>

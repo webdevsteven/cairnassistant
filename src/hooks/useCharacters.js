@@ -77,5 +77,6 @@ export function createEmptyCharacter() {
       table1: { question: '', text: '' },
       table2: { question: '', text: '' },
     },
+    containers: [],
   }
 }
