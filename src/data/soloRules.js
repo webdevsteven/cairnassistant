@@ -22,19 +22,19 @@ export const soloRulesData = [
       },
       {
         title: 'Resilience',
-        content: 'Roll 2d6 for starting HP and keep the higher result.',
+        content: 'Roll 2d6 for starting HP and keep the higher result, instead of 1d6 (PG, Hit Protection, pg. 9).',
       },
       {
         title: 'Last Stand',
-        content: 'Once per combat, when you would take Critical Damage, you may ignore the STR loss from that single hit. You still lose the HP. This can only prevent death — it does not protect you from future hits.',
+        content: 'Once per combat, when you would take Critical Damage (PG, pg. 65), you may ignore the STR loss from that single hit. You still lose the HP. This can only prevent death — it does not protect you from future hits.',
       },
       {
         title: 'Healing',
-        content: 'Once per day in a safe location, you may remove one Fatigue without requiring a full night\'s rest.',
+        content: 'Once per day in a safe location, you may remove one Fatigue without requiring a full night\'s rest, in addition to normal recovery (PG, Deprivation & Fatigue, pg. 62).',
       },
       {
         title: 'Companions',
-        content: 'You may hire one companion using the hireling rules. Give them a background, attributes (3d6 each), and 1d6 HP. They follow orders but have their own morale. When they hit 0 HP, they are out of the fight.',
+        content: 'You may hire one companion using the Hireling rules (PG, Hirelings, pg. 63). Give them a background, attributes (3d6 each), and 1d6 HP. They follow orders but have their own morale. When they hit 0 HP, they are out of the fight.',
       },
     ],
   },
@@ -85,15 +85,15 @@ export const soloRulesData = [
         title: 'Open Questions',
         content: 'For questions that aren\'t Yes/No, use the Warden\'s Guide tables as oracles.',
         items: [
-          'What\'s in this room? → Lore Room (Room Type + Clue)',
-          'What happened here? → Ruination (Condition + Cause)',
-          'What does this NPC want? → Dungeon Faction Agendas (Goal + Obstacle)',
-          'What\'s the creature doing? → Monster Activity column',
+          'What\'s in this room? → Lore Rooms: Room Type + Clue (WG, pg. 45)',
+          'What happened here? → Ruination: Condition + Cause (WG, pg. 37)',
+          'What does this NPC want? → Dungeon Faction Agendas: Goal + Obstacle (WG, pg. 40)',
+          'What\'s the creature doing? → Monster Rooms: Group + Activity (WG, pg. 44)',
         ],
       },
       {
         title: 'Die of Fate (d6)',
-        content: 'Roll 1d6 when an outcome is uncertain but not worth a full Oracle call.\n4+ = favors you. 1–3 = bad for you.',
+        content: 'Roll 1d6 when an outcome is uncertain but not worth a full Oracle call (PG, Die of Fate, pg. 63).\n4+ = favors you. 1–3 = bad for you.',
       },
     ],
   },
@@ -105,11 +105,11 @@ export const soloRulesData = [
     subsections: [
       {
         title: 'Dungeon',
-        content: 'Follow the Dungeon Exploration Cycle from the Player\'s Guide. Roll Dungeon Events (d6) when you spend extra time in a room, move carelessly, enter a new level, or make noise.\n\nWhen you enter a room, note the first obvious thing:\n• Inhabited: roll Monster Group + Activity → Roll Reactions\n• Empty: roll Lore Room (Room Type + Clue) → interpret as atmosphere or clue\n• Unknown: ask the Oracle, "Is something dangerous here?" (Likely in deep levels, Unlikely near the entrance)\n\nTraps: Careful search (one full turn) = automatic discovery. Careless movement = trigger on 1–2 on 1d6.',
+        content: 'Follow the Dungeon Exploration Cycle (PG, pg. 70). Roll Dungeon Events (d6) (PG, pg. 71) when you spend extra time in a room, move carelessly, enter a new level, or make noise.\n\nWhen you enter a room, note the first obvious thing:\n• Inhabited: roll Monster Rooms: Group + Activity (WG, pg. 44) → Roll Reactions (PG, pg. 63)\n• Empty: roll Lore Rooms: Room Type + Clue (WG, pg. 45) → interpret as atmosphere or clue\n• Unknown: ask the Oracle, "Is something dangerous here?" (Likely in deep levels, Unlikely near the entrance)\n\nTraps: Careful search (one full turn) = automatic discovery. Careless movement = trigger on 1–2 on 1d6 (PG, Traps, pg. 73).',
       },
       {
         title: 'Wilderness',
-        content: 'Follow the Wilderness Exploration Cycle. Each Watch, roll Wilderness Events (d6) after declaring your action.\n\nGetting Lost: Trails = lost on 1–2. Wilderness = lost on 1–3. Recovery costs one Watch.\n\nCamp: Spend the third watch Making Camp. Skip it and you add Fatigue and become Deprived. Deprived travel raises terrain difficulty one step.\n\nCamp safety: Ask the Oracle — "Is this location safe?" Default: 50/50 in the wilderness. An unsafe camp means rolling Wilderness Events during rest; only a result of 6 means uninterrupted sleep.',
+        content: 'Follow the Wilderness Exploration Cycle (PG, pg. 78). Each Watch, roll Wilderness Events (d6) (PG, pg. 78) after declaring your action.\n\nGetting Lost: Trails = lost on 1–2. Wilderness = lost on 1–3. Recovery costs one Watch (PG, Path Type, pg. 75).\n\nCamp: Spend the third watch Making Camp (PG, pg. 79). Skip it and you add Fatigue and become Deprived. Deprived travel raises terrain difficulty one step (PG, Terrain Difficulty, pg. 75).\n\nCamp safety: Ask the Oracle — "Is this location safe?" Default: 50/50 in the wilderness. An unsafe camp means rolling Wilderness Events during rest; only a result of 6 means uninterrupted sleep.',
       },
       {
         title: 'Events (d6)',
@@ -134,8 +134,8 @@ export const soloRulesData = [
     title: 'Factions',
     subsections: [
       {
-        title: 'Faction Actions',
-        content: 'Factions pursue their agendas independently. Between sessions or after significant in-world events, ask for each active faction: "Is this faction positioned to advance a goal right now?" If yes, roll 1d6.',
+        title: 'Faction Actions (d6)',
+        content: 'Factions pursue their agendas independently (WG, Faction Rules, pg. 13). Between sessions or after significant in-world events, ask for each active faction: "Is this faction positioned to advance a goal right now?" If yes, roll 1d6.',
         table: {
           headers: ['d6', 'Result'],
           rows: [
@@ -162,7 +162,7 @@ export const soloRulesData = [
     subsections: [
       {
         title: 'Attitude',
-        content: 'Roll Reactions (2d6) when meeting an NPC whose stance is unknown.',
+        content: 'Roll Reactions (2d6) (PG, pg. 63) when meeting an NPC whose stance is unknown.',
         table: {
           headers: ['2d6', 'Reaction'],
           rows: [
@@ -176,7 +176,7 @@ export const soloRulesData = [
       },
       {
         title: 'Motivation',
-        content: 'Roll Denizen Traits (Virtue + Vice) and Faction Agenda (Goal + Obstacle) if you need to know what they want. Interpret through the fiction.',
+        content: 'Roll Denizen Traits: Virtue + Vice (WG, pg. 39) and Dungeon Faction Agendas: Goal + Obstacle (WG, pg. 40) if you need to know what they want. Interpret through the fiction.',
       },
       {
         title: 'Dialogue',
@@ -192,7 +192,7 @@ export const soloRulesData = [
     subsections: [
       {
         title: 'Core Rules Unchanged',
-        content: 'All combat mechanics are unchanged from the Player\'s Guide. Play your enemies honestly.',
+        content: 'All combat mechanics are unchanged from the Player\'s Guide (PG, Combat, pg. 64–65). Play your enemies honestly.',
       },
       {
         title: 'Before Combat Begins',
@@ -200,7 +200,7 @@ export const soloRulesData = [
       },
       {
         title: 'Morale',
-        content: 'Morale triggers at first casualty and at half strength. Rather than tracking a leader\'s WIL score, assign a likelihood before rolling the Oracle: "Does this group\'s morale hold?"\n\n• Wary, desperate, or loyal groups = Likely\n• Hired muscle, cornered animals, or broken groups = Unlikely\n\nOn a No result, roll 1d6: 1–3 flee, 4–6 surrender or offer terms.',
+        content: 'Morale triggers at first casualty and at half strength (PG, Morale, pg. 63). Rather than tracking a leader\'s WIL score, assign a likelihood before rolling the Oracle: "Does this group\'s morale hold?"\n\n• Wary, desperate, or loyal groups = Likely\n• Hired muscle, cornered animals, or broken groups = Unlikely\n\nOn a No result, roll 1d6: 1–3 flee, 4–6 surrender or offer terms.',
       },
     ],
   },
@@ -212,7 +212,7 @@ export const soloRulesData = [
     subsections: [
       {
         title: 'When Growth is Earned',
-        content: 'Growth is earned through experience. Apply it when a character has engaged in at least two of:',
+        content: 'Growth is earned through experience (WG, Growth, pg. 124). Apply it when a character has engaged in at least two of (WG, Growth Triggers, pg. 125):',
         items: [
           'A consistent pattern of behavior toward a single goal',
           'Taking an obvious risk with unknown consequences',
@@ -229,11 +229,11 @@ export const soloRulesData = [
       },
       {
         title: 'Scars',
-        content: 'Scars apply immediately per the Scars table. Always apply them.',
+        content: 'Scars apply immediately per the Scars table (PG, pg. 66). Always apply them.',
       },
       {
         title: 'The Principle',
-        content: 'Growth should make the character more interesting before it makes them more capable.',
+        content: 'Growth should make the character more interesting before it makes them more capable (WG, Principles for Growth, pg. 124).',
       },
     ],
   },
@@ -245,7 +245,7 @@ export const soloRulesData = [
     subsections: [
       {
         title: 'Before',
-        content: 'Review your character and notebook. Run Faction Actions for anything that\'s had time to develop. Ask: What does my character want this session?',
+        content: 'Review your character and notebook. Run Faction Actions (WG, pg. 13) for anything that\'s had time to develop. Ask: What does my character want this session?',
       },
       {
         title: 'During',
@@ -253,7 +253,7 @@ export const soloRulesData = [
       },
       {
         title: 'After',
-        content: 'Note what changed. Check for growth triggers. Ask:',
+        content: 'Note what changed. Check for growth triggers (WG, pg. 125). Ask:',
         items: [
           'What was the most interesting thing that happened?',
           'What is my character most afraid of now?',
@@ -270,7 +270,7 @@ export const soloRulesData = [
     subsections: [
       {
         title: 'Accept It',
-        content: 'Don\'t rewind the save. The body, the gear, the Bond items — all still in the world. Create a new character who arrives with reason to follow the same thread. Factions that were moving are still moving. The half-explored dungeon is still half-explored.\n\nDeath is a chapter break, not an ending.',
+        content: 'Don\'t rewind the save. The body, the gear, the Bond items (PG, Bonds, pg. 12) — all still in the world. Create a new character who arrives with reason to follow the same thread. Factions that were moving are still moving. The half-explored dungeon is still half-explored.\n\nDeath is a chapter break, not an ending.',
       },
     ],
   },
@@ -323,7 +323,7 @@ export const soloRulesData = [
       },
       {
         title: 'All Other Tables',
-        content: 'Die of Fate (d6): 4+ good · 1–3 bad\n\nReactions (2d6): 2 Hostile · 3–5 Wary · 6–8 Curious · 9–11 Kind · 12 Helpful\n\nEvents (d6): 1 Encounter · 2 Sign · 3 Environment · 4 Loss · 5 Exhaustion · 6 Quiet/Discovery',
+        content: 'Die of Fate (d6): 4+ good · 1–3 bad  (PG, pg. 63)\n\nReactions (2d6): 2 Hostile · 3–5 Wary · 6–8 Curious · 9–11 Kind · 12 Helpful  (PG, pg. 63)\n\nEvents (d6): 1 Encounter · 2 Sign · 3 Environment · 4 Loss · 5 Exhaustion · 6 Quiet/Discovery  (PG, pg. 71 & 78)\n\nFaction Actions (d6): 1 Failure · 2 Setback · 3 Status Quo · 4 Mixed · 5 Success · 6 Major  (WG, pg. 13)',
       },
     ],
   },
